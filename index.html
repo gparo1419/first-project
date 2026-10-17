@@ -3,18 +3,314 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>first-project</title>
+  <!-- Test page: keep out of search results until it's ready for real traffic -->
+  <meta name="robots" content="noindex, nofollow">
+  <title>Injured in a Car Accident? Free Case Review | Your Law Firm</title>
+  <meta name="description" content="Hurt in a car accident? Get a free, no-obligation case review. You pay nothing unless we win.">
   <style>
-    body { font-family: system-ui, sans-serif; display: grid; place-items: center; min-height: 100vh; margin: 0; background: #f6f6f4; color: #222; }
-    main { text-align: center; padding: 2rem; }
-    h1 { font-size: 2.5rem; margin-bottom: .5rem; }
-    p { color: #666; }
+    :root {
+      --navy: #0f2340;
+      --navy-2: #17335c;
+      --accent: #f2a900;
+      --accent-dark: #d99400;
+      --ink: #1d2433;
+      --muted: #5b6475;
+      --line: #e3e6ec;
+      --bg: #f5f7fa;
+      --ok: #1f7a4d;
+      --err: #b42318;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink); background: #fff; line-height: 1.5; }
+    a { color: inherit; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+
+    /* Top bar */
+    .topbar { background: var(--navy); color: #fff; }
+    .topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 14px; }
+    .brand { font-weight: 800; font-size: 1.15rem; letter-spacing: .2px; }
+    .top-call { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .top-call small { display: block; font-size: .75rem; opacity: .8; }
+    .top-call strong { font-size: 1.15rem; color: var(--accent); }
+
+    /* Hero */
+    .hero { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%); color: #fff; padding-block: 48px 56px; }
+    .hero .wrap { display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items: start; }
+    .eyebrow { display: inline-block; background: rgba(242,169,0,.15); color: var(--accent); border: 1px solid rgba(242,169,0,.4); border-radius: 999px; padding: 4px 12px; font-size: .85rem; font-weight: 600; }
+    h1 { font-size: clamp(2rem, 4.5vw, 3rem); line-height: 1.1; margin: 16px 0; }
+    .hero p.lead { font-size: 1.15rem; opacity: .9; margin: 0 0 24px; max-width: 34em; }
+    .checks { list-style: none; padding: 0; margin: 0 0 28px; display: grid; gap: 10px; }
+    .checks li { display: flex; gap: 10px; align-items: flex-start; font-size: 1.05rem; }
+    .checks li::before { content: "✓"; flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: var(--navy); font-weight: 800; display: grid; place-items: center; font-size: .85rem; margin-top: 2px; }
+    .btn-call { display: inline-flex; align-items: center; gap: 10px; background: transparent; color: #fff; border: 2px solid rgba(255,255,255,.5); border-radius: 10px; padding: 12px 20px; font-weight: 700; text-decoration: none; font-size: 1.05rem; }
+    .btn-call:hover { border-color: #fff; }
+
+    /* Form card */
+    .card { background: #fff; color: var(--ink); border-radius: 14px; padding: 28px; box-shadow: 0 20px 50px rgba(0,0,0,.25); }
+    .card h2 { margin: 0 0 4px; font-size: 1.4rem; }
+    .card .sub { margin: 0 0 20px; color: var(--muted); font-size: .95rem; }
+    .field { margin-bottom: 14px; }
+    label { display: block; font-weight: 600; font-size: .9rem; margin-bottom: 6px; }
+    input, select, textarea { width: 100%; font: inherit; padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); }
+    input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+    textarea { min-height: 84px; resize: vertical; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .consent { display: flex; gap: 10px; align-items: flex-start; font-size: .78rem; color: var(--muted); margin: 6px 0 16px; }
+    .consent input { width: auto; margin-top: 3px; }
+    .hp { position: absolute; left: -9999px; }
+    .btn-submit { width: 100%; background: var(--accent); color: var(--navy); border: 0; border-radius: 10px; padding: 16px; font-size: 1.1rem; font-weight: 800; cursor: pointer; }
+    .btn-submit:hover { background: var(--accent-dark); }
+    .btn-submit:disabled { opacity: .6; cursor: wait; }
+    .form-msg { margin-top: 12px; font-size: .9rem; }
+    .form-msg.err { color: var(--err); }
+    .secure { text-align: center; color: var(--muted); font-size: .8rem; margin-top: 10px; }
+    .thanks { text-align: center; padding: 24px 4px; }
+    .thanks .icon { width: 56px; height: 56px; border-radius: 50%; background: #e7f5ee; color: var(--ok); display: grid; place-items: center; font-size: 1.6rem; margin: 0 auto 12px; }
+
+    /* Sections */
+    section { padding-block: 64px; }
+    section h2.title { text-align: center; font-size: clamp(1.6rem, 3vw, 2.1rem); margin: 0 0 8px; }
+    section p.intro { text-align: center; color: var(--muted); margin: 0 auto 40px; max-width: 40em; }
+    .alt { background: var(--bg); }
+    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .tile { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
+    .tile h3 { margin: 0 0 8px; font-size: 1.1rem; }
+    .tile p { margin: 0; color: var(--muted); }
+    .step-num { width: 36px; height: 36px; border-radius: 50%; background: var(--navy); color: #fff; font-weight: 800; display: grid; place-items: center; margin-bottom: 12px; }
+    .cases { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+    .cases span { background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; font-weight: 600; }
+
+    /* FAQ */
+    .faq { max-width: 760px; margin: 0 auto; }
+    details { border-bottom: 1px solid var(--line); padding: 16px 0; }
+    summary { font-weight: 700; cursor: pointer; font-size: 1.05rem; }
+    details p { color: var(--muted); margin: 10px 0 0; }
+
+    /* CTA band + footer */
+    .cta-band { background: var(--navy); color: #fff; text-align: center; }
+    .cta-band h2 { margin: 0 0 8px; font-size: clamp(1.5rem, 3vw, 2rem); }
+    .cta-band p { opacity: .85; margin: 0 0 24px; }
+    .cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary { display: inline-block; background: var(--accent); color: var(--navy); font-weight: 800; padding: 14px 24px; border-radius: 10px; text-decoration: none; }
+    footer { background: #0a1830; color: rgba(255,255,255,.65); font-size: .8rem; padding-block: 28px 96px; }
+    footer p { margin: 0 0 8px; }
+
+    /* Sticky mobile call bar */
+    .mobile-bar { display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; background: var(--navy); padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); gap: 10px; box-shadow: 0 -4px 16px rgba(0,0,0,.2); }
+    .mobile-bar a { flex: 1; text-align: center; padding: 12px; border-radius: 8px; font-weight: 800; text-decoration: none; }
+    .mobile-bar .call { background: var(--accent); color: var(--navy); }
+    .mobile-bar .form { background: rgba(255,255,255,.12); color: #fff; }
+
+    @media (max-width: 860px) {
+      .hero .wrap { grid-template-columns: 1fr; gap: 32px; }
+      .grid3 { grid-template-columns: 1fr; }
+      .top-call small { display: none; }
+      .mobile-bar { display: flex; }
+    }
+    @media (max-width: 420px) {
+      .row { grid-template-columns: 1fr; }
+      .card { padding: 22px; }
+    }
   </style>
 </head>
 <body>
-  <main>
-    <h1>Hello from Greg 👋</h1>
-    <p>This site was pushed to GitHub and deployed by Vercel.</p>
-  </main>
+
+  <header class="topbar">
+    <div class="wrap">
+      <div class="brand">Your Law Firm</div>
+      <a class="top-call" href="tel:+15555550123">
+        <span><small>Free consultation — call now</small><strong>(555) 555-0123</strong></span>
+      </a>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="wrap">
+      <div>
+        <span class="eyebrow">Car Accident Injury Help</span>
+        <h1>Hurt in a Car Accident? Find Out What Your Case Is Worth.</h1>
+        <p class="lead">Insurance companies move fast to pay as little as possible. Talk to an experienced car accident lawyer before you accept any offer.</p>
+        <ul class="checks">
+          <li>Free, no-obligation case review</li>
+          <li>You pay nothing unless we win your case</li>
+          <li>We deal with the insurance companies for you</li>
+          <li>Available 24/7 — we can come to you</li>
+        </ul>
+        <a class="btn-call" href="tel:+15555550123">📞 Call (555) 555-0123</a>
+      </div>
+
+      <div class="card" id="form">
+        <div id="form-wrap">
+          <h2>Get Your Free Case Review</h2>
+          <p class="sub">Takes 30 seconds. An attorney will contact you shortly.</p>
+          <form id="lead-form" novalidate>
+            <div class="row">
+              <div class="field">
+                <label for="firstName">First name</label>
+                <input id="firstName" name="firstName" autocomplete="given-name" required>
+              </div>
+              <div class="field">
+                <label for="lastName">Last name</label>
+                <input id="lastName" name="lastName" autocomplete="family-name" required>
+              </div>
+            </div>
+            <div class="field">
+              <label for="phone">Phone</label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required>
+            </div>
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" autocomplete="email" required>
+            </div>
+            <div class="field">
+              <label for="when">When did the accident happen?</label>
+              <select id="when" name="when" required>
+                <option value="">Select one</option>
+                <option>Within the last week</option>
+                <option>Within the last month</option>
+                <option>1–6 months ago</option>
+                <option>6–12 months ago</option>
+                <option>More than a year ago</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="details">Briefly, what happened? <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+              <textarea id="details" name="details" maxlength="1000"></textarea>
+            </div>
+            <!-- Honeypot: hidden from people, bots tend to fill it -->
+            <div class="hp" aria-hidden="true">
+              <label for="company">Company</label>
+              <input id="company" name="company" tabindex="-1" autocomplete="off">
+            </div>
+            <label class="consent">
+              <input type="checkbox" id="consent" name="consent" required>
+              <span>By submitting, I agree to be contacted by Your Law Firm by phone, text or email about my inquiry. Consent is not a condition of service. Submitting this form does not create an attorney-client relationship.</span>
+            </label>
+            <button class="btn-submit" type="submit">Get My Free Case Review →</button>
+            <div class="form-msg" id="form-msg" role="alert"></div>
+            <p class="secure">🔒 Your information is confidential.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <h2 class="title">How It Works</h2>
+      <p class="intro">Getting help after a crash shouldn't add to your stress. Here's what happens after you reach out.</p>
+      <div class="grid3">
+        <div class="tile"><div class="step-num">1</div><h3>Tell us what happened</h3><p>Fill out the form or call. It's free and there's no obligation.</p></div>
+        <div class="tile"><div class="step-num">2</div><h3>Get a free case review</h3><p>An attorney reviews your situation and explains your options in plain language.</p></div>
+        <div class="tile"><div class="step-num">3</div><h3>We fight for you</h3><p>We handle the insurers and paperwork so you can focus on recovering.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="alt">
+    <div class="wrap">
+      <h2 class="title">Accidents We Handle</h2>
+      <p class="intro">If you were injured because someone else was careless, you may be entitled to compensation for medical bills, lost wages, and pain and suffering.</p>
+      <div class="cases">
+        <span>Rear-end collisions</span><span>T-bone crashes</span><span>Head-on collisions</span>
+        <span>Hit and run</span><span>Uninsured drivers</span><span>Rideshare (Uber/Lyft)</span>
+        <span>Truck accidents</span><span>Motorcycle accidents</span><span>Pedestrian accidents</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="title">Common Questions</h2>
+      <p class="intro">Straight answers to what people ask most after a car accident.</p>
+      <div class="faq">
+        <details><summary>How much does it cost to hire a lawyer?</summary><p>Nothing up front. We work on a contingency fee, which means we're only paid if we recover money for you.</p></details>
+        <details><summary>Should I talk to the other driver's insurance company?</summary><p>It's best to speak with a lawyer first. Adjusters may use what you say to reduce or deny your claim.</p></details>
+        <details><summary>How long do I have to file a claim?</summary><p>Every state sets a deadline, called the statute of limitations. Missing it can mean losing your right to compensation, so it's important to act quickly.</p></details>
+        <details><summary>What if I was partly at fault?</summary><p>You may still be able to recover compensation, depending on your state's laws. A free case review can help you understand where you stand.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-band">
+    <div class="wrap">
+      <h2>Don't Wait — Deadlines Apply</h2>
+      <p>Get a free case review today. No fees unless we win.</p>
+      <div class="cta-actions">
+        <a class="btn-primary" href="#form">Start My Free Review</a>
+        <a class="btn-call" href="tel:+15555550123">📞 (555) 555-0123</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <p><strong>Attorney Advertising.</strong> Prior results do not guarantee a similar outcome. The information on this page is not legal advice, and contacting us does not create an attorney-client relationship.</p>
+      <p>© <span id="year"></span> Your Law Firm. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <div class="mobile-bar">
+    <a class="call" href="tel:+15555550123">📞 Call Now</a>
+    <a class="form" href="#form">Free Review</a>
+  </div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Pass PPC tracking params (utm_*, gclid, etc.) through with the lead
+    const params = new URLSearchParams(location.search);
+    const tracking = {};
+    for (const key of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'msclkid']) {
+      if (params.get(key)) tracking[key] = params.get(key);
+    }
+
+    const form = document.getElementById('lead-form');
+    const msg = document.getElementById('form-msg');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.textContent = '';
+      msg.className = 'form-msg';
+
+      const data = Object.fromEntries(new FormData(form));
+      data.consent = form.consent.checked;
+
+      const missing = [];
+      if (!data.firstName.trim()) missing.push('first name');
+      if (!data.lastName.trim()) missing.push('last name');
+      if (data.phone.replace(/\D/g, '').length < 10) missing.push('a valid phone number');
+      if (!/^\S+@\S+\.\S+$/.test(data.email)) missing.push('a valid email');
+      if (!data.when) missing.push('when the accident happened');
+      if (!data.consent) missing.push('your consent to be contacted');
+      if (missing.length) {
+        msg.textContent = 'Please provide ' + missing.join(', ') + '.';
+        msg.classList.add('err');
+        return;
+      }
+
+      const button = form.querySelector('.btn-submit');
+      button.disabled = true;
+      button.textContent = 'Sending…';
+
+      try {
+        const res = await fetch('/api/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...data, tracking, page: location.pathname }),
+        });
+        if (!res.ok) throw new Error('Request failed');
+        document.getElementById('form-wrap').innerHTML =
+          '<div class="thanks"><div class="icon">✓</div><h2>Thank you, ' +
+          data.firstName.replace(/[<>&"]/g, '') +
+          '!</h2><p class="sub">We received your request. An attorney will contact you shortly. If you need help right away, call <a href="tel:+15555550123"><strong>(555) 555-0123</strong></a>.</p></div>';
+      } catch {
+        msg.textContent = 'Something went wrong. Please call us at (555) 555-0123.';
+        msg.classList.add('err');
+        button.disabled = false;
+        button.textContent = 'Get My Free Case Review →';
+      }
+    });
+  </script>
 </body>
 </html>
